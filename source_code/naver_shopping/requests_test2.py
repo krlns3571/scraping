@@ -20,10 +20,10 @@ headers = {
 
 }
 
-lists = ['캠핑의자','에어랩','텀블러','핸드폰','커피','세제']
+lists = ['캠핑의자', '에어랩', '텀블러', '핸드폰', '커피', '세제']
 
 for value in lists:
-    for x in range(1,21):
+    for x in range(1, 21):
         params = {
             'sort': 'rel',
             'pagingIndex': f'{x}',
@@ -43,3 +43,12 @@ for value in lists:
         print(x)
         res = requests.get('https://search.shopping.naver.com/api/search/all', headers=headers, params=params)
         print(json.loads(res.text)['shoppingResult']['products'][0]['imageUrl'])
+        # imageUrl
+        # productName
+        # openDate
+        # mallName
+        # purchaseCnt
+        # reviewCount
+
+        # ",".join([x['id'] for x in json.loads(res.text)['shoppingResult']['products']])
+
