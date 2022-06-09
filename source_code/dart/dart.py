@@ -23,7 +23,7 @@ from tqdm import tqdm
 chrome_ver = chromedriver_autoinstaller.get_chrome_version().split('.')[0]  # 크롬드라이버 버전 확인
 path = chromedriver_autoinstaller.install(True)
 file_datetime = datetime.datetime.now().strftime('%y%m%d_%H%M')
-os.mkdir(f'./{file_datetime}')
+# os.mkdir(f'./{file_datetime}')
 
 
 # os.mkdir(f'./{file_datetime}/Top 100')
@@ -94,7 +94,7 @@ def extract_logs(driver, filter_url):
         for idx, log in enumerate(results):
             # request_id = log["params"]["requestId"]
             try:
-                requests_ids[idx] = log[0]["params"]['documentURL']
+                requests_ids[idx] = log[-1]["params"]['documentURL']
             except:
                 requests_ids[idx] = log
         return requests_ids
@@ -122,7 +122,7 @@ options.add_argument("--start-maximized")
 options.add_argument("--window-size=1920,1080")
 options.add_argument("--disable-gpu")
 options.add_argument('--incognito')
-# options.add_argument('--headless')
+options.add_argument('--headless')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument("--disable-setuid-sandbox")
@@ -162,65 +162,178 @@ if __name__ == '__main__':
     names = df_from_excel['회사명'].values.tolist()
     urls = df_from_excel['url'].values.tolist()
     years = df_from_excel['연도'].values.tolist()
-    aa = []
-    bb = []
-    cc = []
-    dd = []
-    ee = []
-    ff = []
-    gg = []
-    hh = []
-    ii = []
-    jj = []
-    kk = []
-    ll = []
-    mm = []
-    for name, url, year in zip(names, urls, years):
-        driver = driver_setting()
-        driver.get(url)
-        driver.find_element(By.XPATH, '//*[@id="3_anchor"]').click()
-        xx = extract_logs(driver, ['eleId=3'])
-        driver.get(xx[0])
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
-        for x in driver.find_elements(By.XPATH, '//*[contains(text(),"유동자산")]/following-sibling::td'):
-            if x.text:
-                aa.append(x.text)
-                break
-        for x in driver.find_elements(By.XPATH, '//*[contains(text(),"비유동자산")]/following-sibling::td'):
-            if x.text:
-                bb.append(x.text)
-                break
-        for x in driver.find_elements(By.XPATH, '//*[contains(text(),"자산총계")]/following-sibling::td'):
-            if x.text:
-                cc.append(x.text)
-                break
-        for x in soup.find(text=re.compile(r"자( \xa0){0,}본( \xa0){0,}총( \xa0){0,}계")).find_all_next('td'):
-            if x.text:
-                dd.append(x.text)
-                break
-        for x in soup.find(text=re.compile(r"자( \xa0){0,} 산( \xa0){0,} 총( \xa0){0,} 계")).find_all_next('td'):
-            if x.text:
-                ee.append(x.text)
-                break
-        for x in driver.find_elements(By.XPATH, '//*[contains(text(),"매출액")]/following-sibling::td'):
-            if x.text:
-                ff.append(x.text)
-                break
-        for x in driver.find_elements(By.XPATH, '//*[contains(text(),"매출총이익")]/following-sibling::td'):
-            if x.text:
-                gg.append(x.text)
-                break
-        for x in driver.find_elements(By.XPATH, '//*[text()="1. 급여"]/following-sibling::td'):
-            if x.text:
-                hh.append(x.text)
-                break
 
-        for x in driver.find_elements(By.XPATH, '//*[contains(text(),"교육훈련비")]/following-sibling::td'):
-            if x.text:
-                ii.append(x.text)
-                break
-        for x in driver.find_elements(By.XPATH, '//*[contains(text(),"영업이익")]/following-sibling::td'):
-            if x.text:
-                jj.append(x.text)
-                break
-        print(1)
+    a = ''
+    b = ''
+    d = ''
+    e = ''
+    f = ''
+    g = ''
+    h = ''
+    i = ''
+    j = ''
+    k = ''
+    l = ''
+    gap = 32
+    try:
+        for idx, name in enumerate(names[gap:]):
+            try:
+                driver = driver_setting()
+                driver.get(urls[idx+gap])
+                driver.find_element(By.XPATH, "//a[contains(text(),'재무')]").click()
+                xx = extract_logs(driver, ['eleId'])
+                driver.get(xx[0])
+                soup = BeautifulSoup(driver.page_source, 'lxml')
+                for x in soup.find(['td','p'], text=re.compile(r"유동자산")).find_all_next('td', align='RIGHT'):
+                    if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                        a = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                        # print(soup.find(['td','p'], text=re.compile(r"유동자산")).find_parent('table').find_previous('table').text.split(':')[1].strip())
+                        break
+                for x in soup.find(['td','p'], text=re.compile(r"비유동자산")).find_all_next('td', align='RIGHT'):
+                    if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                        b = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                        # print(soup.find(['td', 'p'], text=re.compile(r"비유동자산")).find_parent('table').find_previous('table').text.split(':')[1].strip())
+                        break
+                try:
+                    for x in soup.find(['td','p'], text=re.compile(r"자([ ]*\xa0[ ]*){0,}본([ ]*\xa0[ ]*){0,}총([ ]*\xa0[ ]*){0,}계")).find_all_next('td', align='RIGHT'):
+                        if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                            d = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                            # print(soup.find(['td','p'], text=re.compile(r"자([ ]*\xa0[ ]*){0,}본([ ]*\xa0[ ]*){0,}총([ ]*\xa0[ ]*){0,}계")).find_parent('table').find_previous('table').text.split(':')[1].strip())
+                            break
+                except:
+                    for x in soup.find(['td','p'], text=re.compile(r"자(\xa0 ){0,}본(\xa0 ){0,}총(\xa0 ){0,}계")).find_all_next('td', align='RIGHT'):
+                        if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                            d = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                            # print(soup.find(['td','p'], text=re.compile(r"자(\xa0 ){0,}본(\xa0 ){0,}총(\xa0 ){0,}계")).find_parent('table').find_previous('table').text.split(':')[1].strip())
+                            break
+                try:
+                    for x in soup.find(['td','p'], text=re.compile(r"자([ ]*\xa0[ ]*){0,}산([ ]*\xa0[ ]*){0,}총([ ]*\xa0[ ]*){0,}계")).find_all_next('td', align='RIGHT'):
+                        if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                            e = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                            # print(soup.find(['td','p'], text=re.compile(r"자([ ]*\xa0[ ]*){0,}산([ ]*\xa0[ ]*){0,}총([ ]*\xa0[ ]*){0,}계")).find_parent('table').find_previous('table').text.split(':')[1].strip())
+                            break
+                except:
+                    for x in soup.find(['td','p'], text=re.compile(r"자( \xa0){0,}산( \xa0){0,}총( \xa0){0,}계")).find_all_next('td', align='RIGHT'):
+                        if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                            e = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                            # print(soup.find(['td','p'], text=re.compile(r"자( \xa0){0,}산( \xa0){0,}총( \xa0){0,}계")).find_parent('table').find_previous('table').text.split(':')[1].strip())
+                            break
+                for x in soup.find(['td','p'], text=re.compile(r"매출액")).find_all_next('td', align='RIGHT'):
+                    if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                        f = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                        # print(soup.find(['td','p'], text=re.compile(r"매출액")).find_parent('table').find_previous('table').text.split(':')[1].strip())
+                        break
+                for x in soup.find(['td','p'], text=re.compile(r"매출총이익")).find_all_next('td', align='RIGHT'):
+                    if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                        g = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                        # print(soup.find(['td','p'], text=re.compile(r"매출총이익")).find_parent('table').find_previous('table').text.split(':')[1].strip())
+                        break
+                try:
+                    for x in soup.find(['td','p'], text=re.compile(r"1. 급여")).find_all_next('td', align='RIGHT'):
+                        if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                            h = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                            # print(soup.find(['td','p'], text=re.compile(r"1. 급여")).find_parent('table').find_previous('table').text.split(':')[1].strip())
+                            break
+                except:
+                    try:
+                        for x in soup.find(['td','p'], text="급여").find_all_next('td', align='RIGHT'):
+                            if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                                h = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                                # print(soup.find(['td','p'], text="급여").find_parent('table').find_previous('table').text.split(':')[1].strip())
+                                break
+                    except:
+                        try:
+                            for x in soup.find(['td','p'], text="급여및상여").find_all_next('td', align='RIGHT'):
+                                if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                                    h = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                                    # print(soup.find(['td','p'], text="급여및상여").find_parent('table').find_previous('table').text.split(':')[1].strip())
+                                    break
+                        except:
+                            try:
+                                for x in soup.find(['td','p'], text=re.compile("급료와수당")).find_all_next('td', align='RIGHT'):
+                                    if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                                        h = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                                        # print(soup.find(['td','p'], text=re.compile("급료와수당")).find_parent('table').find_previous('table').text.split(':')[1].strip())
+                                        break
+                            except:
+                                for x in soup.find(['td', 'p'], text=re.compile("급여[ ]*및[ ]*상여")).find_all_next('td', align='RIGHT'):
+                                    if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-', '').replace('\xa0', ''):
+                                        h = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0', '')
+                                        # print(soup.find(['td', 'p'], text=re.compile("급여[ ]*및[ ]*상여")).find_parent('table').find_previous('table').text.split(':')[1].strip())
+                                        break
+                try:
+                    for x in soup.find(['td','p'], text=re.compile(r"교육훈련비")).find_all_next('td', align='RIGHT'):
+                        if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                            i = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                            # print(soup.find(['td','p'], text=re.compile(r"교육훈련비")).find_parent('table').find_previous('table').text.split(':')[1].strip())
+                            break
+                except:
+                    try:
+                        for x in soup.find(['td','p'], text=re.compile(r"교육비")).find_all_next('td', align='RIGHT'):
+                            if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                                i = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                                # print(soup.find(['td','p'], text=re.compile(r"교육비")).find_parent('table').find_previous('table').text.split(':')[1].strip())
+                                break
+                    except:
+                        i='0'
+                for x in soup.find(['td','p'], text=re.compile(r"영업이익")).find_all_next('td', align='RIGHT'):
+                    if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                        j = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                        # print(soup.find(['td','p'], text=re.compile(r"영업이익")).find_parent('table').find_previous('table').text.split(':')[1].strip())
+                        break
+                try:
+                    for x in soup.find(['td','p'], text=re.compile(r"법인세비용차감전순이익")).find_all_next('td', align='RIGHT'):
+                        if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                            k = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                            # print(soup.find(['td','p'], text=re.compile(r"법인세비용차감전순이익")).find_parent('table').find_previous('table').text.split(':')[1].strip())
+                            break
+                except:
+                    for x in soup.find(['td','p'], text=re.compile(r"법인세비용차감전순손실")).find_all_next('td', align='RIGHT'):
+                        if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                            k = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                            # print(soup.find(['td','p'], text=re.compile(r"법인세비용차감전순손실")).find_parent('table').find_previous('table').text.split(':')[1].strip())
+                            k = '-'+ k
+                            break
+                for x in soup.find(['td','p'], text=re.compile(r"당기순이익")).find_all_next('td', align='RIGHT'):
+                    if x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0',''):
+                        l = x.text.replace(' ', '').replace('　', '').replace(',', '').replace('-','').replace('\xa0','')
+                        # print(soup.find(['td','p'], text=re.compile(r"당기순이익")).find_parent('table').find_previous('table').text.split(':')[1].strip())
+                        # if len(l) < 7:
+                        #     l = l + '000'
+                        break
+
+                print([name, urls[idx+gap], years[idx+gap], a, b, d, e, f, g, h, i, j, k, l])
+                a = ''
+                b = ''
+                d = ''
+                e = ''
+                f = ''
+                g = ''
+                h = ''
+                i = ''
+                j = ''
+                k = ''
+                l = ''
+                # print(1)
+                driver.close()
+            except:
+                a = ''
+                b = ''
+                d = ''
+                e = ''
+                f = ''
+                g = ''
+                h = ''
+                i = ''
+                j = ''
+                k = ''
+                l = ''
+                print([name, urls[idx + gap], years[idx + gap], a, b, d, e, f, g, h, i, j, k, l])
+                driver.close()
+                pass
+
+    except Exception as exc:
+        # print([name, urls[idx+gap], years[idx+gap], a, b, d, e, f, g, h, i, j, k, l])
+        # print(exc)
+        # driver.close()
+        pass

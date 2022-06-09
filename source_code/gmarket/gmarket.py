@@ -44,23 +44,32 @@ options.add_argument('user-agent={0}'.format(user_agent))
 caps = DesiredCapabilities.CHROME
 caps['goog:loggingPrefs'] = {'performance': 'ALL'}
 
-
 driver = webdriver.Chrome(executable_path=f'./{chrome_ver}/chromedriver.exe', chrome_options=options,
-                              desired_capabilities=caps)
+                          desired_capabilities=caps)
+
+def print_xlsx(list_, path, header, header_size):
+    df = pd.DataFrame(list_, )
+    writer = pd.ExcelWriter(f"./{path}.xlsx", engine='xlsxwriter', )
+    df.to_excel(writer, header=header, index=False)
+    for column, column_length in zip(df, header_size):
+        col_idx = df.columns.get_loc(column)
+        writer.sheets['Sheet1'].set_column(col_idx, col_idx, column_length)
+    writer.close()
 
 imgs = []
 names = []
 prices = []
 deliveries = []
-page =1
+img_ox = []
+page = 1
 refresh_cnt = 5
 while True:
 
     print(page)
-    driver.get(f"http://minishop.gmarket.co.kr/dalkkong/List?Title=Best%20Item&CategoryType=General&SortType=MostPopular&DisplayType=SmallImage&Page={page}&PageSize=60&IsFreeShipping=False&HasDiscount=False&HasStamp=False&HasMileage=False&IsInternationalShipping=False&IsTpl=False&MinPrice=14940&MaxPrice=1249690&Roles=System.String%5B%5D")
+    driver.get(
+        f"http://minishop.gmarket.co.kr/peaceh/List?Title=Best%20Item&CategoryType=General&SortType=MostPopular&DisplayType=SmallImage&Page={page}&PageSize=60&IsFreeShipping=False&HasDiscount=False&HasStamp=False&HasMileage=False&IsInternationalShipping=False&IsTpl=False&MinPrice=14940&MaxPrice=1249690&Roles=System.String%5B%5D")
 
-
-    elem = driver.find_element(By.TAG_NAME,"body")
+    elem = driver.find_element(By.TAG_NAME, "body")
     # cnt = 6
     # while cnt:
     #     elem.send_keys(Keys.PAGE_DOWN)
@@ -70,7 +79,8 @@ while True:
     # time.sleep(1)
     if len(driver.find_elements(By.XPATH, '//*[@id="ItemList"]/div[3]/ul/li/p/a/img')) == 0:
         break
-    imgresult = ['http:'+x.get_attribute('data-original').split('/280')[0]+'/300' for x in driver.find_elements(By.XPATH, '//*[@id="ItemList"]/div[3]/ul/li/p/a/img')]
+    imgresult = ['http:' + x.get_attribute('data-original').split('/280')[0] + '/300' for x in
+                 driver.find_elements(By.XPATH, '//*[@id="ItemList"]/div[3]/ul/li/p/a/img')]
     # if 'http://image.gmarket.co.kr/challenge/neo_image/no_image.gif/300' in imgresult:
     #     elem.send_keys(Keys.HOME)
     #     if refresh_cnt > 0:
@@ -88,14 +98,25 @@ while True:
      [x.get_attribute('alt') for x in driver.find_elements(By.XPATH, '//*[@id="ItemList"]/div[3]/ul/li/div/p[3]/img')]]
     page += 1
 
-
-for idx,img in enumerate(imgs):
-    try:
-        urlretrieve(img, f'.\\pictures\\{idx+1}.jpg')
-    except:
-        print(f'no image : {idx+1}')
+for idx, img in enumerate(imgs):
+    # time.sleep(.2)
+    # while True:
+        try:
+            urlretrieve(img, f'.\\pictures\\{idx + 1}.jpg')
+            img_ox.append('')
+            # break
+        except Exception as e:
+            if e.code == 500 or e.code == 502:
+                continue
+            print(f'no image : {idx + 1}')
+            img_ox.append('X')
+            # break
+print_xlsx(pd.DataFrame([list(range(1, len(names))), names, prices, deliveries, img_ox]).T, 'results',
+           ['번호', '상품제목', '가격', '배송비', '이미지여부'], [5, 10, 10, 10, 10])
 print(imgs)
 # try:
 #     urlretrieve(src_link, f'.\\pictures\\{filename}')
 # except:
 #     pass
+
+

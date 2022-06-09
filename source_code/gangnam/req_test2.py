@@ -1,0 +1,9 @@
+cookies = {
+    'token': 'b701a148023548febaaec25977ad3f8f',
+    '_ga': 'GA1.2.881351732.1654738310',
+    '_gid': 'GA1.2.885428043.1654738310',
+    '_gcl_au': '1.1.1114995989.1654738311',
+    '_gat': '1',
+    '_dd_s': 'rum=1&id=39f265f0-6ccd-4c9e-8a9b-8ab23c05c32c&created=1654738309632&expire=1654739735827',
+    'amplitude_id_ee9e97f46fa77da052305bb94e327b88gangnamunni.com': 'eyJkZXZpY2VJZCI6ImYxNmVmN2Q3LTM5NzQtNDcwNi05ZTgxLWQzNmY5MTc0Y2U5YVIiLCJ1c2VySWQiOm51bGwsIm9wdE91dCI6ZmFsc2UsInNlc3Npb25JZCI6MTY1NDczODMxMDYyMCwibGFzdEV2ZW50VGltZSI6MTY1NDczODgzNjU4OSwiZXZlbnRJZCI6MjIsImlkZW50aWZ5SWQiOjAsInNlcXVlbmNlTnVtYmVyIjoyMn0=',
+}

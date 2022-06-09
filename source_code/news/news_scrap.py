@@ -113,9 +113,6 @@ if __name__ == '__main__':
             elif url.find('kado.net') > 0:
                 results.append(driver.find_element(By.XPATH, "//div[contains(@class,'article-body')]").text)
 
-            elif url.find('ytn.co.kr') > 0:
-                results.append(driver.find_element(By.XPATH, "//div[contains(@class,'article')]/span").text)
-
             elif url.find('khan.co.kr') > 0:
                 results.append(
                     "\n\n".join([x.text for x in driver.find_elements(By.XPATH, "//p[contains(@class,'content_text')]")]))
@@ -187,3 +184,7 @@ if __name__ == '__main__':
         print(f'총 {len(results)}개의 수집이 완료되었습니다. 해당 창은 종료하셔도 좋습니다.')
 
 
+
+# 42개
+
+#상품 썸네일 가격 옵션내용 제목

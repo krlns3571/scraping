@@ -5,6 +5,9 @@ import urllib.request
 from datetime import datetime
 from time import sleep
 
+from powernad.API.AdGroup import *
+from powernad.API.Campaign import *
+
 import numpy as np
 import pandas as pd
 from dateutil.relativedelta import relativedelta
@@ -93,117 +96,123 @@ def get_ratio():
 
 
 if __name__ == '__main__':
-
-    for keyword in keyword_list:
-        a = naverKwdApi(keyword.replace(' ', ''))
-
-        result = get_ratio()
-
-        if result['timeUnit'] == 'month':
-            print(result['results'][0]['title'])
-            [print(x['period'] + '\n' + str(x['ratio'])) for x in result['results'][0]['data']]
-            exit(1)
-
-        if result:
-            pass
-        else:
-            print('사용 가능한 client_id, client_secret을 모두 다 사용하셨습니다.')
-            exit(1)
-
-        date = [a['period'] for a in result['results'][0]['data']]
-
-        aa = pd.DataFrame({'date': date,
-                           keyword: [a['ratio'] for a in result['results'][0]['data']],
-                           })
-
-        # 일일 데이터 계산
-
-        sleep(0.5)
-        total = aa[keyword].sum()
-
-        aa[keyword] = aa[keyword].apply(lambda x: ((x / total) * float(a)))
-
-        try:
-            if type(naverKwdApi(keyword)) != str:
-                searchword = keyword.replace(" ", "")
-                a = naverKwdApi(searchword)
-
-                dt_index = pd.date_range(start=time_month, end=yesterday)
-                dt_list = dt_index.strftime("%Y-%m-%d").tolist()
-
-                date = pd.DataFrame(data=dt_list, columns=['날짜'])
-
-                spred = pd.merge(date, aa, left_on='날짜', right_on='date', how='outer')
-                spred.drop(['date'], inplace=True, axis=1)
-                spred.replace(np.nan, 0, inplace=True)
-
-                a = []
-
-                for j in range(len(spred)):
-                    a.append(today)
-
-                spred['수집날짜'] = a
-                spred = spred[['날짜', '수집날짜', keyword]]
-
-                if keyword in dictionary_yester:
-                    pass
-
-                else:
-                    dictionary_yester[keyword] = []
-
-                dictionary_now[keyword] = spred
-
-            else:
-                pass
-
-        except (TypeError, IndexError, KeyError, ValueError):
-            pass
-
-        sleep(0.5)
-        try:
-            if type(naverKwdApi(keyword)) != str:
-                searchword = keyword.replace(" ", "")
-                a = naverKwdApi(searchword)
-
-                if dictionary_yester[keyword] == []:
-                    dictionary_yester[keyword] = dictionary_now[keyword]
-                else:
-                    pass
-            else:
-                pass
-
-
-        except (TypeError, IndexError, KeyError):
-            pass
-
-
-        except ValueError:
-
-            yester_df = dictionary_yester[keyword]
-            today_df = dictionary_now[keyword]
-
-            yester_df.set_index('날짜', inplace=True)
-
-            today_df.set_index('날짜', inplace=True)
-
-            yester_df.update(today_df)
-
-            tmpt = today_df.iloc[-1, :]
-
-            yester_df = yester_df.append(tmpt)
-
-            yester_df.reset_index(inplace=True)
-            today_df.reset_index(inplace=True)
-            dictionary_yester[keyword] = yester_df
-
-
-        except:
-            pass
-
-        # print(dictionary_now[keyword])
-        for idx, x in dictionary_now[keyword].iterrows():
-            print(x['날짜'])
-            print(x[keyword])
-        print('=' * 100)
-
-# print(1)
+    campaign = Campaign(KRW_API_URL,
+                                       KWD_API_ACCESS_LICCENSE,
+                                       KWD_API_SECRET_KEY,
+                                       KWD_API_CUSTOMER_ID_ID)
+    campaign_lists = campaign.get_campaign_list()
+    [print(str(idx+1) + ')\t' +x.name) for idx, x in enumerate(campaign_lists)]
+#
+#     for keyword in keyword_list:
+#         a = naverKwdApi(keyword.replace(' ', ''))
+#
+#         result = get_ratio()
+#
+#         if result['timeUnit'] == 'month':
+#             print(result['results'][0]['title'])
+#             [print(x['period'] + '\n' + str(x['ratio'])) for x in result['results'][0]['data']]
+#             exit(1)
+#
+#         if result:
+#             pass
+#         else:
+#             print('사용 가능한 client_id, client_secret을 모두 다 사용하셨습니다.')
+#             exit(1)
+#
+#         date = [a['period'] for a in result['results'][0]['data']]
+#
+#         aa = pd.DataFrame({'date': date,
+#                            keyword: [a['ratio'] for a in result['results'][0]['data']],
+#                            })
+#
+#         # 일일 데이터 계산
+#
+#         sleep(0.5)
+#         total = aa[keyword].sum()
+#
+#         aa[keyword] = aa[keyword].apply(lambda x: ((x / total) * float(a)))
+#
+#         try:
+#             if type(naverKwdApi(keyword)) != str:
+#                 searchword = keyword.replace(" ", "")
+#                 a = naverKwdApi(searchword)
+#
+#                 dt_index = pd.date_range(start=time_month, end=yesterday)
+#                 dt_list = dt_index.strftime("%Y-%m-%d").tolist()
+#
+#                 date = pd.DataFrame(data=dt_list, columns=['날짜'])
+#
+#                 spred = pd.merge(date, aa, left_on='날짜', right_on='date', how='outer')
+#                 spred.drop(['date'], inplace=True, axis=1)
+#                 spred.replace(np.nan, 0, inplace=True)
+#
+#                 a = []
+#
+#                 for j in range(len(spred)):
+#                     a.append(today)
+#
+#                 spred['수집날짜'] = a
+#                 spred = spred[['날짜', '수집날짜', keyword]]
+#
+#                 if keyword in dictionary_yester:
+#                     pass
+#
+#                 else:
+#                     dictionary_yester[keyword] = []
+#
+#                 dictionary_now[keyword] = spred
+#
+#             else:
+#                 pass
+#
+#         except (TypeError, IndexError, KeyError, ValueError):
+#             pass
+#
+#         sleep(0.5)
+#         try:
+#             if type(naverKwdApi(keyword)) != str:
+#                 searchword = keyword.replace(" ", "")
+#                 a = naverKwdApi(searchword)
+#
+#                 if dictionary_yester[keyword] == []:
+#                     dictionary_yester[keyword] = dictionary_now[keyword]
+#                 else:
+#                     pass
+#             else:
+#                 pass
+#
+#
+#         except (TypeError, IndexError, KeyError):
+#             pass
+#
+#
+#         except ValueError:
+#
+#             yester_df = dictionary_yester[keyword]
+#             today_df = dictionary_now[keyword]
+#
+#             yester_df.set_index('날짜', inplace=True)
+#
+#             today_df.set_index('날짜', inplace=True)
+#
+#             yester_df.update(today_df)
+#
+#             tmpt = today_df.iloc[-1, :]
+#
+#             yester_df = yester_df.append(tmpt)
+#
+#             yester_df.reset_index(inplace=True)
+#             today_df.reset_index(inplace=True)
+#             dictionary_yester[keyword] = yester_df
+#
+#
+#         except:
+#             pass
+#
+#         # print(dictionary_now[keyword])
+#         for idx, x in dictionary_now[keyword].iterrows():
+#             print(x['날짜'])
+#             print(x[keyword])
+#         print('=' * 100)
+#
+# # print(1)

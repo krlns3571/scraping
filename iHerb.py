@@ -20,6 +20,11 @@ headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36',
 }
 while True:
-    response = requests.get('https://catalog.app.iherb.com/product/77549', headers=headers,)
+    response = requests.get('https://iherb.com/pr/82846', headers=headers,)
     print(response.status_code)
     # time.sleep(.5)
+
+    # 예시링크이고 아래 스크린샷처럼 표시한부분 브랜드(영문), 제품명(한글), 가격, 무게(lb) 를 엑셀로 추출하고 이미지를 jpg 파일로 저장하고싶습니다
+    # 22.05.30
+    # 10:08
+    # 가격(달러)
