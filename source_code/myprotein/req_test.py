@@ -9,6 +9,7 @@ import time
 
 import chromedriver_autoinstaller
 import pandas as pd
+import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -147,3 +148,9 @@ def driver_setting():
 
 if __name__ == '__main__':
     driver = driver_setting()
+    driver.get("https://www.myprotein.co.kr/sports-nutrition/impact-whey-protein/10530943.html")
+
+    json.loads(
+        driver.find_element(By.XPATH, "//script[contains(@type,'application/ld+json')]").get_attribute("innerHTML"))
+    requests.get('https://www.myprotein.co.kr/sports-nutrition/impact-whey-protein/10530943.html?shippingcountry=KR&switchcurrency=KRW&variation=10530971')
+    print(1)

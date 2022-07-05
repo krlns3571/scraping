@@ -44,7 +44,7 @@ options.add_argument('user-agent={0}'.format(user_agent))
 caps = DesiredCapabilities.CHROME
 caps['goog:loggingPrefs'] = {'performance': 'ALL'}
 
-driver = webdriver.Chrome(executable_path=f'./{chrome_ver}/chromedriver.exe', chrome_options=options,
+driver = webdriver.Chrome(executable_path=f'./{chrome_ver}/chromedriver', chrome_options=options,
                           desired_capabilities=caps)
 
 def print_xlsx(list_, path, header, header_size):
@@ -67,7 +67,7 @@ while True:
 
     print(page)
     driver.get(
-        f"http://minishop.gmarket.co.kr/peaceh/List?Title=Best%20Item&CategoryType=General&SortType=MostPopular&DisplayType=SmallImage&Page={page}&PageSize=60&IsFreeShipping=False&HasDiscount=False&HasStamp=False&HasMileage=False&IsInternationalShipping=False&IsTpl=False&MinPrice=14940&MaxPrice=1249690&Roles=System.String%5B%5D")
+        f"http://minishop.gmarket.co.kr/leebangin/List?Title=Best%20Item&CategoryType=General&SortType=MostPopular&DisplayType=SmallImage&Page={page}&PageSize=60&IsFreeShipping=False&HasDiscount=False&HasStamp=False&HasMileage=False&IsInternationalShipping=False&IsTpl=False&MinPrice=14940&MaxPrice=1249690&Roles=System.String%5B%5D")
 
     elem = driver.find_element(By.TAG_NAME, "body")
     # cnt = 6
@@ -100,17 +100,17 @@ while True:
 
 for idx, img in enumerate(imgs):
     # time.sleep(.2)
-    # while True:
+    while True:
         try:
-            urlretrieve(img, f'.\\pictures\\{idx + 1}.jpg')
+            urlretrieve(img, f'/Users/nuvent/projects/test_scrap/source_code/gmarket/pictures/{idx + 1}.jpg')
             img_ox.append('')
-            # break
+            break
         except Exception as e:
             if e.code == 500 or e.code == 502:
                 continue
             print(f'no image : {idx + 1}')
             img_ox.append('X')
-            # break
+            break
 print_xlsx(pd.DataFrame([list(range(1, len(names))), names, prices, deliveries, img_ox]).T, 'results',
            ['번호', '상품제목', '가격', '배송비', '이미지여부'], [5, 10, 10, 10, 10])
 print(imgs)

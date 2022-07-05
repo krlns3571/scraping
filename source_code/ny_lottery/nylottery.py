@@ -126,3 +126,4 @@ if __name__ == '__main__':
     while True:
         # 0.5초마다 체크하면서 스케줄러를 실행ㅜ
         time.sleep(.5)
+

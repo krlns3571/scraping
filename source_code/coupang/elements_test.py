@@ -23,7 +23,7 @@ options.add_argument("--start-maximized")
 options.add_argument("--window-size=1920,1080")
 options.add_argument("--disable-gpu")
 options.add_argument('--incognito')
-options.add_argument('--headless')
+# options.add_argument('--headless')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument("--disable-setuid-sandbox")
@@ -36,7 +36,7 @@ options.add_argument('user-agent={0}'.format(user_agent))
 
 caps = DesiredCapabilities.CHROME
 caps['goog:loggingPrefs'] = {'performance': 'ALL'}
-s = Service(f'./{chrome_ver}/chromedriver.exe')
+s = Service(f'./{chrome_ver}/chromedriver')
 
 driver = webdriver.Chrome(service=s, options=options,
                           desired_capabilities=caps)
