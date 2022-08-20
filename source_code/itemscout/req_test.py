@@ -22,7 +22,7 @@ df_from_excel = df_from_excel.replace({np.nan: None})
 
 def print_xlsx(list_, path, header, header_size):
     df = pd.DataFrame(list_, )
-    writer = pd.ExcelWriter(f"./{file_datetime}/{path}.xlsx", engine='xlsxwriter', )
+    writer = pd.ExcelWriter(f"{path}.xlsx", engine='xlsxwriter', )
     df.to_excel(writer, header=header, index=False)
     for column, column_length in zip(df, header_size):
         col_idx = df.columns.get_loc(column)
@@ -49,22 +49,34 @@ headers = {
 
 keyword = []
 seaover = []
+top40_sales = []
+top40_count = []
+top80_sales = []
+top80_count = []
 
 try:
-    for key in tqdm(df_from_excel['키워드'], '키워드'):
+    for idx, key in enumerate(tqdm(df_from_excel['키워드'], '키워드')):
         data = {
             'keyword': key,
         }
 
-        data_id = json.loads(requests.post('https://api.itemscout.io/api/keyword', headers=headers, data=data).text)['data']
-        seaover.append(
-            json.loads(requests.get(f'https://api.itemscout.io/api/v2/keyword/stats/{data_id}', headers=headers).text)[
-                'data']['overseaProductPercent'])
+        data_id = json.loads(requests.post('https://api.itemscout.io/api/keyword', headers=headers, data=data).text)[
+            'data']
+        result = requests.get(f'https://api.itemscout.io/api/v2/keyword/stats/{data_id}', headers=headers).text
+        seaover.append(json.loads(result)['data']['overseaProductPercent'])
+        top40_sales.append(json.loads(result)['data']['statsFromNPay']['sales'])
+        top40_count.append(json.loads(result)['data']['statsFromNPay']['saleCount'])
+        top80_sales.append(json.loads(result)['data']['statsFromNPay']['salesFrom80'])
+        top80_count.append(json.loads(result)['data']['statsFromNPay']['saleCountFrom80'])
         keyword.append(key)
+        df_from_excel['키워드'].pop(idx)
         time.sleep(3)
 except:
     pass
 
-print_xlsx(pd.DataFrame([keyword, seaover]).T, 'result', ['키워드', '해외상품비율'], [20, 20])
+print_xlsx(pd.DataFrame([keyword, seaover,top40_sales,top40_count,top80_sales,top80_count]).T, f'./{file_datetime}/result',
+           ['키워드', '해외상품비율', 'top40 매출', 'top40 판매량', 'top80 매출', 'top80 판매량'], [20, 20, 20, 20, 20, 20])
+print_xlsx(pd.DataFrame(df_from_excel['키워드']),'./input',['키워드'],[20])
+
 print(f'총 {len(seaover)}개의 수집이 완료되었습니다. 해당 창은 종료하셔도 좋습니다.')
-time.sleep(300)
+time.sleep(3000)
