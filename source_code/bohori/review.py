@@ -156,6 +156,7 @@ if __name__ == '__main__':
         time.sleep(1)
         driver.get(review[3])
         # explicitly_wait(driver, By.XPATH, "//div[contains(@class,'create_review')]")
+        already_review = False
         while True:
             try:
                 driver.switch_to.default_content()
@@ -163,9 +164,11 @@ if __name__ == '__main__':
                     driver.switch_to.frame('crema-product-reviews-1')
                 else:
                     driver.switch_to.frame('crema-product-reviews-2')
+                time.sleep(1)
                 try:
                     driver.find_element(By.XPATH, "//div[contains(@class,'create_review')]").click()
-                except:
+                except Exception as e:
+                    already_review = True
                     print('이미 작성된 리뷰')
                     break
                 time.sleep(2)
@@ -176,14 +179,17 @@ if __name__ == '__main__':
                     pass
             except:
                 pass
-
+        if already_review:
+            driver.quit()
+            continue
         driver.switch_to.alert.accept()
         driver.switch_to.default_content()
         try:
             driver.switch_to.frame("crema-review-popup")
         except:
             print('이미 작성된 리뷰')
-            break
+            driver.quit()
+            continue
         time.sleep(.5)
         driver.find_element(By.XPATH, "//*[@id='review_message']").send_keys(review[2])
 
@@ -208,6 +214,14 @@ if __name__ == '__main__':
         if pic_list:
             driver.find_element(By.XPATH, "//input[contains(@class,'_field_input_file')][contains(@accept,'image')]").send_keys("\n".join(pic_list))
         driver.find_element(By.XPATH, f"//button[@name='commit']").click()
+
+        while True:
+            try:
+                driver.switch_to.default_content()
+                driver.switch_to.frame("crema-review-popup")
+                time.sleep(1)
+            except:
+                break
         driver.quit()
 
 
