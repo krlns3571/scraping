@@ -98,7 +98,7 @@ options.add_argument("--start-maximized")
 options.add_argument("--window-size=1920,1080")
 options.add_argument("--disable-gpu")
 options.add_argument('--incognito')
-options.add_argument('--headless')
+# options.add_argument('--headless')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument("--disable-setuid-sandbox")
@@ -201,15 +201,21 @@ if __name__ == '__main__':
         driver.switch_to.default_content()
         driver.switch_to.frame("crema-review-popup")
         time.sleep(.5)
-        driver.find_element(By.XPATH, f'//*[@id="select2-results-1"]/li[{6-review[4]}]').click()
+        try:
+            driver.find_element(By.XPATH, f'//*[@id="select2-results-1"]/li[{int(6-review[4])}]').click()
+        except:
+            driver.find_element(By.XPATH, f'//*[@class="select2-results"]/li[{int(6 - review[4])}]').click()
 
         for idx, x in enumerate(review[5:]):
             if np.isnan(x):
                 break
             driver.switch_to.default_content()
             driver.switch_to.frame("crema-review-popup")
-            driver.find_element(By.XPATH,
-                                f"//div[@class='review_popup_form__section'][{idx + 5}]//div[contains(@class,'section_button_item')][{int(x)}]").click()
+            try:
+                driver.find_element(By.XPATH,
+                                    f"//div[@class='review_popup_form__section'][{idx + 5}]//div[contains(@class,'section_button_item')][{int(x)}]").click()
+            except:
+                continue
 
         if pic_list:
             driver.find_element(By.XPATH, "//input[contains(@class,'_field_input_file')][contains(@accept,'image')]").send_keys("\n".join(pic_list))
