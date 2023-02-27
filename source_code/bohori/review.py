@@ -154,7 +154,10 @@ if __name__ == '__main__':
         driver.get(review[3])
 
         # 로그인 버튼 클릭
-        driver.find_element(By.XPATH, "//a[contains(@href,'login')]").click()
+        if review[3].find('lilyeve') > 0:
+            driver.get('https://lilyeve.kr/member/login.html')
+        else:
+            driver.find_element(By.XPATH, "//a[contains(@href,'login')]").click()
         time.sleep(1)
 
         # 아이디 입력
@@ -179,9 +182,13 @@ if __name__ == '__main__':
                 # amenz를 제외하고는 iframe 설정
                 if review[3].find('amenz') > 0:
                     driver.switch_to.frame('crema-product-reviews-1')
+                elif review[3].find('fineflow') > 0:
+                    driver.switch_to.frame('crema-product-reviews-1')
+                elif review[3].find('lilyeve') > 0:
+                    driver.switch_to.frame('crema-product-reviews-3')
                 else:
                     driver.switch_to.frame('crema-product-reviews-2')
-                time.sleep(1)
+                time.sleep(5)
                 try:
                     driver.find_element(By.XPATH, "//div[contains(@class,'create_review')]").click()
                 except Exception as e:
