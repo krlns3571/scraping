@@ -150,13 +150,14 @@ if __name__ == '__main__':
         [pic_list.append(os.path.abspath(x)) for x in glob.glob(f'./picture/{pic}.*')]
         [pic_list.append(os.path.abspath(x)) for x in glob.glob(f'./picture/{pic}-*')]
 
-        # 리뷰작성할 페이지 접속
-        driver.get(review[3])
+
 
         # 로그인 버튼 클릭
         if review[3].find('lilyeve') > 0:
             driver.get('https://lilyeve.kr/member/login.html')
         else:
+            # 리뷰작성할 페이지 접속
+            driver.get(review[3])
             driver.find_element(By.XPATH, "//a[contains(@href,'login')]").click()
         time.sleep(1)
 
